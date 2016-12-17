@@ -1,6 +1,7 @@
 package com.example;
 
 import com.common.communication.Log;
+import com.common.communication.interfaces.ConnectionStateChangedListener;
 import com.common.communication.managers.WifiCommunicationManager;
 
 /**
@@ -16,6 +17,37 @@ public class StartMyServices
     {
         Log.d(TAG, "startServices()");
         mWifiCommunicationManager.startServerAcceptThread();
+        mWifiCommunicationManager.registerToConnectionStateChanged(new ConnectionStateChangedListener() {
+            @Override
+            public void onNone()
+            {
+                mWifiCommunicationManager.startServerAcceptThread();
+            }
+
+            @Override
+            public void onLost()
+            {
+
+            }
+
+            @Override
+            public void onListen()
+            {
+
+            }
+
+            @Override
+            public void onConnecting()
+            {
+
+            }
+
+            @Override
+            public void onConnected()
+            {
+
+            }
+        });
     }
 
     @Override

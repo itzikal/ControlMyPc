@@ -9,6 +9,7 @@ import com.control.my.pc.R;
 
 public class MainActivity extends AppCompatActivity
 {
+    private final WifiCommunicationManager mWifiCommunicationManager = new WifiCommunicationManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -19,9 +20,31 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                WifiCommunicationManager c = new WifiCommunicationManager();
-                c.clientConnectToDevice("10.0.0.6", "What the fuck?");
+
+                mWifiCommunicationManager.clientConnectToDevice("10.0.0.6", "What the fuck?");
             }
         });
+        findViewById(R.id.disconnect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+
+                mWifiCommunicationManager.closeCommunication();
+            }
+        });
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        mWifiCommunicationManager.closeCommunication();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        mWifiCommunicationManager.closeCommunication();
     }
 }

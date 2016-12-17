@@ -59,6 +59,7 @@ public class ConnectedThread extends BaseConnectionThread implements SendMessage
         mMessageReceived = false;
         while (shellKeepThreadAlive())
         {
+            Log.d(TAG, "Connected Thread - keep alive ");
             try
             {
                 BufferedReader is = new BufferedReader(new InputStreamReader(mInStream));
