@@ -34,7 +34,7 @@ public class ConnectThread extends BaseConnectionThread
         {
             closeThread();
             mManager.onConnectionFailed();
-            Log.e(TAG, "failed to connect(),");
+            Log.e(TAG, "failed to connect(),", e);
             return;
         }
 

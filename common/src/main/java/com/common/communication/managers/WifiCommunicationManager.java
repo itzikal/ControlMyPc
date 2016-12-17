@@ -16,28 +16,32 @@ import java.net.Socket;
  */
 public class WifiCommunicationManager extends BaseCommunicationManager
 {
-    static final int HTTP_SERVER_PORT = 8888;
+    static final int HTTP_SERVER_PORT = 9000;
     private static final String TAG = WifiCommunicationManager.class.getSimpleName();
 
     @Override
     protected void startConcreteServerAcceptThread()
     {
-        new Thread(() -> {
-            Log.d(TAG, "startConcreteServerAcceptThread(), init wifi server thread");
-            ServerSocket serverSocket = null;
-            try
+        new Thread(new Runnable() {
+            @Override
+            public void run()
             {
-                serverSocket = new ServerSocket(HTTP_SERVER_PORT);
-            }
-            catch (IOException e)
-            {
-                Log.e(TAG, "startConcreteServerAcceptThread(), failed", e);
-                onFailedCreatingServerSocket();
-                return;
-            }
+                Log.d(TAG, "startConcreteServerAcceptThread(), init wifi server thread");
+                ServerSocket serverSocket = null;
+                try
+                {
+                    serverSocket = new ServerSocket(HTTP_SERVER_PORT);
+                }
+                catch (IOException e)
+                {
+                    Log.e(TAG, "startConcreteServerAcceptThread(), failed", e);
+                    onFailedCreatingServerSocket();
+                    return;
+                }
 
-            mServerAcceptedThread = new WifiServerAcceptThread(new WifiServerSocket(serverSocket), WifiCommunicationManager.this);
-            mServerAcceptedThread.start();
+                mServerAcceptedThread = new WifiServerAcceptThread(new WifiServerSocket(serverSocket), WifiCommunicationManager.this);
+                mServerAcceptedThread.start();
+            }
         }).start();
     }
 
