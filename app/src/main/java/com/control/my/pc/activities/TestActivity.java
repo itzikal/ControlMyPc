@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.common.communication.managers.WifiCommunicationManager;
 import com.control.my.pc.R;
+import com.control.my.pc.searchForHosts.NetworkHostFoundCallback;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -23,9 +24,9 @@ import java.util.ArrayList;
 
 import static com.control.my.pc.R.id.my_ip;
 
-public class MainActivity extends AppCompatActivity
+public class TestActivity extends AppCompatActivity
 {
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = TestActivity.class.getSimpleName();
     private final WifiCommunicationManager mWifiCommunicationManager = new WifiCommunicationManager();
     private int LoopCurrentIP;
 
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
-        list.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+        list.setLayoutManager(new LinearLayoutManager(TestActivity.this));
         final HostListAddapter adapter = new HostListAddapter();
         list.setAdapter(adapter);
 

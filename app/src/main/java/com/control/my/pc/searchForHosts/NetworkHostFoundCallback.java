@@ -1,4 +1,4 @@
-package com.control.my.pc.activities;
+package com.control.my.pc.searchForHosts;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
