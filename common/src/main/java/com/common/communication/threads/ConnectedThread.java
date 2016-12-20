@@ -23,6 +23,7 @@ public class ConnectedThread extends BaseConnectionThread implements SendMessage
     private ISocket mSocket;
     private final ICommunicationManager mManager;
     protected boolean mMessageReceived;
+    private boolean mConnectionLost = false;
 
     public ConnectedThread(ISocket socket, ICommunicationManager manager)
     {
@@ -48,7 +49,7 @@ public class ConnectedThread extends BaseConnectionThread implements SendMessage
     public void run()
     {
         Log.i(TAG, "connected thread started");
-      
+
         if (mInStream == null)
         {
             Log.e(TAG, "input stream was not created!");
@@ -64,13 +65,17 @@ public class ConnectedThread extends BaseConnectionThread implements SendMessage
             {
                 BufferedReader is = new BufferedReader(new InputStreamReader(mInStream));
                 String request = is.readLine();
+                if (request == null)
+                {
+                    onConnectionLost();
+                    break;
+                }
                 mManager.onMessageReceived(request, mSocket);
                 mMessageReceived = true;
             }
             catch (IOException e)
             {
-                Log.e(TAG, "disconnected", e);
-                mManager.onConnectionLost();
+                onConnectionLost();
                 break;
             }
         }
@@ -78,9 +83,18 @@ public class ConnectedThread extends BaseConnectionThread implements SendMessage
         Log.d(TAG, "Connected Thread ended.");
     }
 
+    private void onConnectionLost()
+    {
+        closeThread();
+        mConnectionLost = true;
+        Log.e(TAG, "request is null - connecting lost");
+        mManager.onConnectionLost();
+        return;
+    }
+
     protected boolean shellKeepThreadAlive()
     {
-        return true;
+        return !mConnectionLost;
     }
 
     public void sendMessage(String message)
@@ -100,18 +114,33 @@ public class ConnectedThread extends BaseConnectionThread implements SendMessage
             {
                 mInStream.close();
             }
+        }
+        catch (Exception e)
+        {
+            Log.e(TAG, "closeThread: mInStream failed");
+        }
+        try
+        {
             if (mOutStream != null)
             {
                 mOutStream.close();
             }
+        }
+        catch (Exception e)
+        {
+            Log.e(TAG, "closeThread: mOutStream failed");
+        }
+        try
+        {
             if (mSocket != null)
             {
+
                 mSocket.close();
             }
         }
         catch (IOException e)
         {
-            Log.e(TAG, "close() of connect socket failed", e);
+            Log.e(TAG, "closeThread() mSocket failed", e);
         }
     }
 

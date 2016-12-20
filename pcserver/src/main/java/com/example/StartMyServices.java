@@ -21,7 +21,7 @@ public class StartMyServices
             @Override
             public void onNone()
             {
-                mWifiCommunicationManager.startServerAcceptThread();
+//                mWifiCommunicationManager.startServerAcceptThread();
             }
 
             @Override
