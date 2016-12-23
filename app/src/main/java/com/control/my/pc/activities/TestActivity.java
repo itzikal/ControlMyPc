@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.common.communication.managers.WifiCommunicationManager;
+import com.common.helpers.Point;
 import com.common.remoteEvents.CursorEvent;
 import com.common.remoteEvents.NewRemoteEvent;
 import com.control.my.pc.R;
@@ -28,6 +29,7 @@ import static com.control.my.pc.R.id.my_ip;
 
 public class TestActivity extends AppCompatActivity
 {
+
     private static final String LOG_TAG = TestActivity.class.getSimpleName();
     private final WifiCommunicationManager mWifiCommunicationManager = new WifiCommunicationManager();
     private int LoopCurrentIP;
@@ -60,7 +62,33 @@ public class TestActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                sendCommandEvent();
+                NewRemoteEvent<CursorEvent> remoteEvent = new NewRemoteEvent<>(new CursorEvent(50, 50, CursorEvent.CursorEventEnum.Movement));
+                sendCommandEvent(remoteEvent.toGsonString());
+            }
+        });
+        TouchPadView touchPadView = (TouchPadView) findViewById(R.id.touch_pad);
+        touchPadView.setTouchEventListener(new OnTouchEventListener()
+        {
+            @Override
+            public void onMove(Point point)
+            {
+                Log.d(LOG_TAG, "onMove " + point);
+                NewRemoteEvent<CursorEvent> remoteEvent = new NewRemoteEvent<>(new CursorEvent(point, CursorEvent.CursorEventEnum.Movement));
+                sendCommandEvent(remoteEvent.toGsonString());
+            }
+
+            @Override
+            public void onClick()
+            {
+                NewRemoteEvent<CursorEvent> remoteEvent = new NewRemoteEvent<>(new CursorEvent(new Point(0, 0), CursorEvent.CursorEventEnum.Click));
+                sendCommandEvent(remoteEvent.toGsonString());
+            }
+
+            @Override
+            public void onDoubleTap()
+            {
+                NewRemoteEvent<CursorEvent> remoteEvent = new NewRemoteEvent<>(new CursorEvent(new Point(0, 0), CursorEvent.CursorEventEnum.DoubleClick));
+                sendCommandEvent(remoteEvent.toGsonString());
             }
         });
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
@@ -74,11 +102,13 @@ public class TestActivity extends AppCompatActivity
             public void onClick(View v)
             {
 
-                getConnectedDevices(myIp(), new NetworkHostFoundCallback() {
+                getConnectedDevices(myIp(), new NetworkHostFoundCallback()
+                {
                     @Override
                     public void onNetworksFound(final ArrayList<InetAddress> inetAddresses)
                     {
-                        runOnUiThread(new Runnable() {
+                        runOnUiThread(new Runnable()
+                        {
                             @Override
                             public void run()
                             {
@@ -91,7 +121,7 @@ public class TestActivity extends AppCompatActivity
             }
         });
 
-//        ((TextView)findViewById(R.id.my_ip)).setText(myIp() + " "+ myGateWay());
+        //        ((TextView)findViewById(R.id.my_ip)).setText(myIp() + " "+ myGateWay());
         getNetworkInfo();
 
     }
@@ -105,19 +135,19 @@ public class TestActivity extends AppCompatActivity
     private void getNetworkInfo()
     {
         WifiManager wifii = (WifiManager) getSystemService(WIFI_SERVICE);
-        DhcpInfo d=wifii.getDhcpInfo();
+        DhcpInfo d = wifii.getDhcpInfo();
 
-        String s_dns1="DNS 1: "+ Formatter.formatIpAddress(d.dns1);
-        String s_dns2="DNS 2: "+ Formatter.formatIpAddress(d.dns2);
-        String s_gateway="Default Gateway: "+ Formatter.formatIpAddress(d.gateway);
-        String s_ipAddress="IP Address: "+ Formatter.formatIpAddress(d.ipAddress);
-        String s_leaseDuration="Lease Time: "+String.valueOf(d.leaseDuration);
-        String s_netmask="Subnet Mask: "+ Formatter.formatIpAddress(d.netmask);
-        String s_serverAddress="Server IP: "+ Formatter.formatIpAddress(d.serverAddress);
+        String s_dns1 = "DNS 1: " + Formatter.formatIpAddress(d.dns1);
+        String s_dns2 = "DNS 2: " + Formatter.formatIpAddress(d.dns2);
+        String s_gateway = "Default Gateway: " + Formatter.formatIpAddress(d.gateway);
+        String s_ipAddress = "IP Address: " + Formatter.formatIpAddress(d.ipAddress);
+        String s_leaseDuration = "Lease Time: " + String.valueOf(d.leaseDuration);
+        String s_netmask = "Subnet Mask: " + Formatter.formatIpAddress(d.netmask);
+        String s_serverAddress = "Server IP: " + Formatter.formatIpAddress(d.serverAddress);
 
         //dispaly them
         TextView info = (TextView) findViewById(my_ip);
-        info.setText("Network Info\n"+s_dns1+"\n"+s_dns2+"\n"+s_gateway+"\n"+s_ipAddress+"\n"+s_leaseDuration+"\n"+s_netmask+"\n"+s_serverAddress);
+        info.setText("Network Info\n" + s_dns1 + "\n" + s_dns2 + "\n" + s_gateway + "\n" + s_ipAddress + "\n" + s_leaseDuration + "\n" + s_netmask + "\n" + s_serverAddress);
     }
 
     @Override
@@ -136,11 +166,12 @@ public class TestActivity extends AppCompatActivity
 
     public void getConnectedDevices(final String YourPhoneIPAddress, final NetworkHostFoundCallback networkHostFound)
     {
-        new Thread(new Runnable() {
+        new Thread(new Runnable()
+        {
             @Override
             public void run()
             {
-                ArrayList < InetAddress > ret = new ArrayList<>();
+                ArrayList<InetAddress> ret = new ArrayList<>();
 
                 LoopCurrentIP = 0;
 
@@ -181,14 +212,16 @@ public class TestActivity extends AppCompatActivity
             }
         }).start();
     }
-    private void sendCommandEvent()
+
+    private void sendCommandEvent(final String s)
     {
-        new Thread(new Runnable() {
+        new Thread(new Runnable()
+        {
             @Override
             public void run()
             {
-                NewRemoteEvent<CursorEvent> remoteEvent = new  NewRemoteEvent<>(new CursorEvent(50,50, CursorEvent.CursorEventEnum.Movement));
-                mWifiCommunicationManager.sendMessage(remoteEvent.toGsonString());
+
+                mWifiCommunicationManager.sendMessage(s);
             }
         }).start();
 
@@ -204,6 +237,7 @@ public class TestActivity extends AppCompatActivity
             mItems.addAll(items);
             notifyDataSetChanged();
         }
+
         @Override
         public StringViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
         {
@@ -216,13 +250,14 @@ public class TestActivity extends AppCompatActivity
         public void onBindViewHolder(StringViewHolder holder, final int position)
         {
             holder.mText.setText(mItems.get(position).getHostAddress());
-         holder.itemView.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v)
-             {
-                 mWifiCommunicationManager.clientConnectToDevice(mItems.get(position).getHostAddress(), "What the fuck?");
-             }
-         });
+            holder.itemView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    mWifiCommunicationManager.clientConnectToDevice(mItems.get(position).getHostAddress(), "What the fuck?");
+                }
+            });
         }
 
         @Override
@@ -231,6 +266,7 @@ public class TestActivity extends AppCompatActivity
             return mItems.size();
         }
     }
+
     class StringViewHolder extends RecyclerView.ViewHolder
     {
         TextView mText;
