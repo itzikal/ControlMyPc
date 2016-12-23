@@ -29,4 +29,6 @@ public interface EventInjectHelper
     void invokeCursorClick();
 
     void invokeKeyStroke(KeyStrokeEvent event);
+
+    void invokeCursorDoubleClick();
 }

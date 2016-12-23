@@ -9,6 +9,7 @@ import java.awt.AWTException;
 import java.awt.MouseInfo;
 import java.awt.PointerInfo;
 import java.awt.Robot;
+import java.awt.event.InputEvent;
 
 /**
  * Created by Itzik on 23/12/2016.
@@ -89,13 +90,26 @@ public class BotWrapper implements EventInjectHelper
         int x = (int) b.getX();
         int y = (int) b.getY();
         Log.d(TAG, "updateCursorPosition to " +cursorMovementDelta +", mouse position" +b);
-        mBot.mouseMove(x - cursorMovementDelta.getX(), y - cursorMovementDelta.getY());
+        mBot.mouseMove(x + cursorMovementDelta.getX(), y + cursorMovementDelta.getY());
     }
 
     @Override
     public void invokeCursorClick()
     {
+        doClick();
+    }
 
+    private void doClick()
+    {
+        mBot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        mBot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+    }
+
+    @Override
+    public void invokeCursorDoubleClick()
+    {
+        doClick();
+        doClick();
     }
 
     @Override

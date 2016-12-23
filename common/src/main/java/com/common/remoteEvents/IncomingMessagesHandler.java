@@ -97,6 +97,7 @@ public class IncomingMessagesHandler
                 mEventInjectHelper.invokeCursorClick();
                 break;
             case DoubleClick:
+                mEventInjectHelper.invokeCursorDoubleClick();
                 break;
         }
     }
