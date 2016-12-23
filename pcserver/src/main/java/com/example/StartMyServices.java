@@ -3,6 +3,7 @@ package com.example;
 import com.common.communication.Log;
 import com.common.communication.interfaces.ConnectionStateChangedListener;
 import com.common.communication.managers.WifiCommunicationManager;
+import com.common.remoteEvents.IncomingMessagesHandler;
 
 /**
  * Created by Itzik on 17/12/2016.
@@ -11,7 +12,8 @@ public class StartMyServices
 {
 
     private static final String TAG = StartMyServices.class.getSimpleName();
-    WifiCommunicationManager mWifiCommunicationManager = new WifiCommunicationManager();
+    private final WifiCommunicationManager mWifiCommunicationManager = new WifiCommunicationManager();
+    private IncomingMessagesHandler mMessagesHandler;
 
     public void startServices()
     {
@@ -21,7 +23,6 @@ public class StartMyServices
             @Override
             public void onNone()
             {
-//                mWifiCommunicationManager.startServerAcceptThread();
             }
 
             @Override
@@ -45,7 +46,16 @@ public class StartMyServices
             @Override
             public void onConnected()
             {
+                BotWrapper eventInjectHelper = new BotWrapper();
+                eventInjectHelper.startBot();
+                mMessagesHandler = new IncomingMessagesHandler(eventInjectHelper);
+            }
 
+        });
+        mWifiCommunicationManager.registerToMessageReceived((message, socket) -> {
+            if (mMessagesHandler != null)
+            {
+                mMessagesHandler.handleReceivedMessage(message);
             }
         });
     }

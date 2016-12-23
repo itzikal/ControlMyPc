@@ -1,16 +1,21 @@
 package com.common.remoteEvents;
 
 
+import com.common.helpers.Point;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import java.awt.Point;
 
 /**
  * Created by Itzik on 10/09/2014.
  */
 public class CursorEvent extends BaseEvent
 {
+    public CursorEvent(int x, int y, CursorEventEnum movement)
+    {
+        this(new Point(x, y), movement);
+    }
+
     public enum CursorEventEnum
     {
         Disable,

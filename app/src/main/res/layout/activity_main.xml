@@ -41,6 +41,12 @@
         android:text="Disconnect"/>
 
     <Button
+        android:id="@+id/send_command"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send message"/>
+
+    <Button
         android:id="@+id/search_hosts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

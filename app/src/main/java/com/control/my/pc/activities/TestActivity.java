@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.common.communication.managers.WifiCommunicationManager;
+import com.common.remoteEvents.CursorEvent;
+import com.common.remoteEvents.NewRemoteEvent;
 import com.control.my.pc.R;
 import com.control.my.pc.searchForHosts.NetworkHostFoundCallback;
 
@@ -53,7 +55,14 @@ public class TestActivity extends AppCompatActivity
                 mWifiCommunicationManager.closeCommunication();
             }
         });
-
+        findViewById(R.id.send_command).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                sendCommandEvent();
+            }
+        });
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setLayoutManager(new LinearLayoutManager(TestActivity.this));
         final HostListAddapter adapter = new HostListAddapter();
@@ -139,7 +148,7 @@ public class TestActivity extends AppCompatActivity
                 String[] myIPArray = YourPhoneIPAddress.split("\\.");
                 InetAddress currentPingAddr;
 
-                for (int i = 0; i <= 255; i++)
+                for (int i = 0; i <= 10; i++)
                 {
                     try
                     {
@@ -171,6 +180,18 @@ public class TestActivity extends AppCompatActivity
                 networkHostFound.onNetworksFound(ret);
             }
         }).start();
+    }
+    private void sendCommandEvent()
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                NewRemoteEvent<CursorEvent> remoteEvent = new  NewRemoteEvent<>(new CursorEvent(50,50, CursorEvent.CursorEventEnum.Movement));
+                mWifiCommunicationManager.sendMessage(remoteEvent.toGsonString());
+            }
+        }).start();
+
     }
 
     class HostListAddapter extends RecyclerView.Adapter<StringViewHolder>
